@@ -33,22 +33,22 @@ public class AsistenteVirtual extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		response.getWriter().append("Served at: ").append(request.getContextPath());
-		Conversation service = new Conversation("{2018-02-16}");
-		service.setUsernameAndPassword("{679717c9-d046-4ff2-afe0-944425c49e1a}", "{dWVeIAPW5efh}");
-		String workspaceId="19294a4c-f1b1-4de9-b1a0-3f70165b6876";
+		//Conversation service = new Conversation("{2018-02-16}");
+		//service.setUsernameAndPassword("{679717c9-d046-4ff2-afe0-944425c49e1a}", "{dWVeIAPW5efh}");
+		//String workspaceId="19294a4c-f1b1-4de9-b1a0-3f70165b6876";
 		
 		
 
 
-		InputData input = new InputData.Builder("Hello").build();
+		//InputData input = new InputData.Builder("Hello").build();
 
-		MessageOptions options = new MessageOptions.Builder(workspaceId)
-		  .input(input)
-		  .build();
+		//MessageOptions options = new MessageOptions.Builder(workspaceId)
+		//  .input(input)
+		//  .build();
 
-		MessageResponse res = service.message(options).execute();
+		//MessageResponse res = service.message(options).execute();
 		
-		response.getWriter().print(res);
+
 		response.getWriter().println("Respuesta recibida");
 
 	}
