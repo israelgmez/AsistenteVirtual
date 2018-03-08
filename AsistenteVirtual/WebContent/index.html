@@ -1,0 +1,440 @@
+<html><head>
+ <link href="css/xzhtcs04.css" rel="stylesheet" type="text/css">
+  <link href="css/arcadia.css" rel="stylesheet" type="text/css">
+ <meta charset="UTF-8">
+<script language="JavaScript" type="text/javascript">
+<!-- 
+function ocultarAmbitos()
+{
+var descr=document.getElementById("descAmbitos");
+var opts=document.getElementById("optAmbitos");
+descr.style.visibility="hidden";
+descr.style.display="none";
+opts.style.visibility="hidden";
+opts.style.display="none";
+}
+var categoriaSeleccionada="";
+var subcategoriaSeleccionada="";
+var tieneHistorial=false;
+
+function registrarValidacion(idc)
+{
+	var urlActual=location.href;
+	var valor="";
+	var max=document.getElementById("intentosRestantes");
+
+	urlActual=urlActual.substring(0,location.href.indexOf("/soporteaeat/"));
+	urlActual+="/soporteaeat/AsistenteVirtual.nsf/registrarEvaluacionUsuario?OpenAgent&operacion="+idc+"Correo";
+		var xhttp;
+		if (window.XMLHttpRequest)
+		{
+			xhttp=new XMLHttpRequest();
+		}
+		else
+		{
+			xhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xhttp.onreadystatechange=function()
+		{
+			if (xhttp.readyState==4 && xhttp.status==200)
+			{
+			//Evaluación registrada en historial de conversaciones
+			}
+		}
+		xhttp.open("GET",urlActual,false);
+		xhttp.send();
+}
+
+function validarIdPrevio()
+{
+var resultadoValidacionIdPrevio=false;
+var idprevio=document.getElementById("IdConsultaPrevia");
+var letra="G";
+if (ambito=="Informatica") letra="I";
+if (idprevio.value!="")
+{
+		var xhttp;
+		if (window.XMLHttpRequest)
+		{
+			xhttp=new XMLHttpRequest();
+		}
+		else
+		{
+			xhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xhttp.onreadystatechange=function()
+		{
+			if (xhttp.readyState==4 && xhttp.status==200)
+			{
+			var respuesta=xhttp.responseText;
+				if (respuesta.indexOf("<VALIDO>")>=0)
+				{
+				resultadoValidacionIdPrevio=true;
+				}
+				else
+				{
+					alert("El ID de consulta previa introducido no es correcto");
+					idprevio.value="";
+				}
+			}
+		}
+		xhttp.open("GET","https://www2.agenciatributaria.gob.es/soporteaeat/AsistenteVirtual.nsf/validarIdConsulta?OpenAgent&codigo="+letra+idprevio.value,false);
+		xhttp.send();
+
+//Contrastar que el ID existe
+}
+		return resultadoValidacionIdPrevio;
+}
+function selCategoriaGeneralSoporte(cadena)
+{
+	return true;
+var params=cadena.split(",");
+var valor=params[0].replace("'","");
+valor=valor.replace("'","");
+var indice=params[1].replace("'","");
+indice=indice.replace("'","");
+var total=params[2].replace("'","");
+total=total.replace("'","");
+selCategoriaSoporte(valor,indice,total);
+}
+function tieneAsistente()
+{
+var email=document.getElementById("email");
+var emailc=document.getElementById("emailConfirmado");
+var emailvisualizado=document.getElementById("emailVisualizado");
+if (!tieneHistorial)
+{
+var categoriasAsistente=document.getElementById("categoriasAsistente");
+var buscar="";
+if (subcategoriaSeleccionada!="") 
+	buscar=categoriaSeleccionada.trim()+":"+subcategoriaSeleccionada.trim()+";";
+else
+	buscar=categoriaSeleccionada.trim()+";";
+var hayAsistente= (categoriasAsistente.value.indexOf(buscar)>=0);
+if (buscar==";") hayAsistente=false;
+var ulIniciarAsistente=document.getElementById("botonIniciarAsistente");
+var divFormulario=document.getElementById("formularioConsulta");
+if (hayAsistente)
+{
+/*Mostramos el botón del asistente salvo que sea una consulta previa con ID válido*/
+var consultaPrevia=validarIdPrevio();
+if (!consultaPrevia)
+{
+ulIniciarAsistente.style.visibility="visible";
+//divAvisoAsistente.className="validar";
+ulIniciarAsistente.style.display="block";
+divFormulario.style.visibility="hidden";
+divFormulario.style.display="none";
+}
+else
+{
+/*
+mostramos el formulario de soporte
+*/
+ulIniciarAsistente.style.visibility="hidden";
+ulIniciarAsistente.style.display="none";
+divFormulario.style.visibility="visible";
+divFormulario.style.display="block";
+editor.resize("100%",'400',true);
+}
+}
+else
+{
+/*
+mostramos el formulario de soporte
+*/
+divFormulario.style.visibility="visible";
+divFormulario.style.display="block";
+editor.resize("100%",'400',true);
+}
+
+}
+}
+function selSubCategoriaSoporte(cat,subcat,indiceCat,totalSubs)
+{
+var catObj=document.getElementById("categoriaSeleccionada");
+
+catObj.value=cat+";"+subcat;
+subcategoriaSeleccionada=subcat;
+tieneAsistente();
+}
+function selCategoriaSoporte(valor,indice,total)
+{
+var formulario=document.getElementById("formularioConsulta");
+formulario.style.visibility="hidden";
+formulario.style.display="none";
+var botonInicio=document.getElementById("botonIniciarAsistente");
+botonInicio.style.visibility="hidden";
+botonInicio.style.display="none";
+
+categoriaSeleccionada=valor;
+subcategoriaSeleccionada="";
+var catObj=document.getElementById("categoriaSeleccionada");
+catObj.value="";
+var divSubs;
+for (var i=0;i<total;i++)
+{	
+	divSubs=document.getElementById("subcats"+i);
+	if (divSubs!=null)
+	{
+		divSubs.style.visibility="hidden";
+		divSubs.style.display="none";
+	}
+}
+divSubs=document.getElementById("subcats"+indice);
+if (divSubs!=null)
+{
+	divSubs.style.visibility="visible";
+	divSubs.style.display="block";
+	var subs=document.getElementsByName("subcateg"+indice);
+	for (var i=0;i<subs.length;i++) subs[i].checked=false;
+}
+else
+{
+//No tiene subcategorías
+catObj.value=valor;
+if (valor!="") tieneAsistente();
+}
+}
+function mostrarOcultarConversacion()
+{
+var d=document.getElementById("ulConversacion");
+if (d.style.visibility=="hidden")
+{
+d.style.visibility="visible";
+d.style.display="block";
+}
+else
+{
+d.style.visibility="hidden";
+d.style.display="none";
+}
+}
+function cargarHistorial(idc)
+{
+var divConv=document.getElementById("divConversacion");
+var conversacionCorreo=document.getElementById("conversacion");
+divConv.innerHTML="";
+var divChat=document.getElementById("chat");
+var nodoConversacion=divChat.childNodes[0];
+var lineasConversacion=nodoConversacion.childNodes;
+var ul=document.createElement("ul");
+divConv.appendChild(ul);
+ul.setAttribute("class","AEAT_Form");
+var li=document.createElement("li");
+li.setAttribute("class","ancho_100");
+li.innerHTML="<br>La conversación mantenida con el Asistente Virtual se incorporará automáticamente a su consulta para atenderle de la forma más eficaz posible. <br>Puede consultar dicha conversación pulsando <u><a href=\"javascript:mostrarOcultarConversacion();\"> \"Mostrar/Ocultar Conversación\"</a></u><br><br>";
+ul.appendChild(li);
+ul=document.createElement("ul");
+ul.setAttribute("id","ulConversacion");
+divConv.appendChild(ul);
+ul.setAttribute("class","AEAT_Form");
+for (var i=0;i<lineasConversacion.length-1;i++)
+{
+li=document.createElement("li");
+li.setAttribute("class","ancho_100");
+ul.appendChild(li);
+li.innerHTML=lineasConversacion[i].innerHTML;
+}
+var br=document.createElement("ul");
+br.setAttribute("class","AEAT_Form");
+divConv.appendChild(br);
+ulConversacion.style.visibility="hidden";
+ulConversacion.style.display="none";
+divConv.style.visibility="visible";
+divConv.style.display="block";
+conversacionCorreo.innerHTML="<ul>"+ulConversacion.innerHTML+"</ul>";
+}
+function cargarHistorialconAjax(idc)
+{
+/*Descatalogado al fusionar formulario y asistente*/
+	var urlActual=location.href;
+	var jsonRespuesta="";
+	var div=document.getElementById("conversacion");
+	div.innerHTML="";
+	urlActual=urlActual.substring(0,location.href.indexOf("SoporteSIIGestion"));
+	urlActual+="consultarConversacion?OpenAgent&idc="+idc;
+		var xhttp;
+		if (window.XMLHttpRequest)
+		{
+			xhttp=new XMLHttpRequest();
+		}
+		else
+		{
+			xhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xhttp.onreadystatechange=function()
+		{
+			if (xhttp.readyState==4 && xhttp.status==200)
+			{
+			div.innerHTML=xhttp.responseText;
+			}
+		}
+		xhttp.open("GET",urlActual,false);
+		xhttp.send();
+		tieneHistorial=true;
+}
+// -->
+</script>
+<link href="css/jquery-ui-1.11.1.min.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui-1.11.1.min.js"></script>
+<script src="js/jBeep.js"></script><script src="js/historico.js"></script>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" style="">
+
+
+<div id="body">
+    
+<div id="AEAT_header"><div id="topIzquierda">	
+
+<div id="contenedor">
+ <div id="contenedorder" style="overflow:hidden;width:50%"><div id="interesar"></div><div id="contactar"></div></div>
+<!-- navegador-->
+<div id="contenedorSub" style="overflow:hidden;width:50%">
+<div class="mt">
+<h1 class="tituloCanal">Atención al Usuario: Consultas SII (Informática)</h1>
+</div>
+<div id="contenidoPrincipal" class="mt" style="visibility:hidden;display:none">
+</div>
+<div id="contenido1" class="mt">
+</div>
+<div id="entradaAsistente" class="mt" style="visibility:visible;display:block">
+<br>
+
+<br>
+Atención al usuario para el <b>Suministro Inmediato de Información</b>.
+
+
+<br>Cumplimente su dirección de correo electrónico  y seleccione una categoría de consulta para comunicarse con nuestro Asistente Virtual. Si nuestra herramienta de atención automática no puede solventar su consulta podrá comunicarse con nosotros a través del formulario de soporte por correo electrónico.<br>
+
+<br>Correo electrónico:<br>
+
+<input name="CorreoE" value="" tabindex="1" id="email" size="30">
+<br>
+<br>Introduzca de nuevo su correo electrónico:<br>
+<input name="CorreoEConfirmado" value="" tabindex="2" id="emailConfirmado" size="30">
+
+
+
+
+<br>
+<script type="text/javascript">
+function validar(){
+	ambitoI=true;
+var divEntrada=document.getElementById("entradaAsistente");
+var botonIniciar=document.getElementById("botonIniciarAsistente");
+	cadenaalert="";
+	cadenaMensajebreve="";
+	correo=document.all["CorreoE"].value;
+	correoConf = document.all["CorreoEConfirmado"].value;
+	var emailUsuario=document.getElementById("emailUsuario");
+	var ambito="";
+	var correoe = /^([a-zA-Z0-9_-])+([\.a-zA-Z0-9_-])*@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-]+)+$/;
+	if (!correoe.test(correo))
+	{
+		cadenaalert+="Dirección de correo electrónico con formato incorrecto\n";
+	}
+	if (correo!=correoConf)
+	{
+		cadenaalert+="La dirección de correo electrónico no coincide en las dos casillas\n";
+	}
+
+		
+//	if (clave == &quot;&quot;) {cadenaalert+=&quot;Por favor, seleccione categoría para su consulta&quot;;}
+	if (cadenaalert!="")
+	{
+		alert(cadenaalert);
+	}
+	else
+	{	
+	if (ambitoI) ambito="Informatica";
+	//Activar Arcadia
+	document.getElementById("ambito").value=ambito;
+	emailUsuario.value=correo;
+	mostrarDiv();
+	var boton=document.getElementById("IniciarAsistente");
+	boton.disabled=true;
+	document.getElementById("entornoI").disabled=true;
+	document.getElementById("entornoG").disabled=true;
+//ocultamos las categorias
+
+entradaAsistente.style.visibility="hidden";
+entradaAsistente.style.display="none";	
+
+botonIniciar.style.visibility="hidden";
+botonIniciar.style.display="none";	
+	}
+}
+</script>
+<input type="button" onclick="validar();" value="Iniciar Asistente" id="IniciarAsistente" class="AEAT_boton_main">  <br><br>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+<div style="visibility:hidden;display:hidden">
+
+<input name="cadenaValidacion" value="">
+<input name="UserAgent" value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36" id="identificadorUserAgent">
+<input name="emailUsuario" value="" id="emailUsuario">
+<p>
+<input name="HTTP_Cookie" value="__utma=75252756.1820826690.1516918670.1516918670.1517254770.2; __utmz=75252756.1517254770.2.2.utmcsr=www1.agenciatributaria.gob.es|utmccn=(referral)|utmcmd=referral|utmcct=/es13/l/EWGREWLINKGR">
+<input name="Remote_Addr" value="37.132.176.108">
+<input name="IdentificadorAcceso" value="">
+<input name="IdentificadorConversacion" value="" id="IdConversacion"><br>
+
+<input name="ContextoConversacion" value="" id="Contexto">
+<input name="Ambito" value="" id="ambito">
+<input name="Terminos" value="">
+<input name="RespuestaSubmit" value="">
+<input name="Categoria" value="" id="categoriaSeleccionada">
+<input name="Buzon" value="" id="buzonSoporte">
+<input name="PalabrasConsulta" value="" id="palabrasConsulta">
+<input name="IntentosRestantes" value="" id="intentosRestantes">
+
+<input name="CategoriaForm" value="" id="CategoriaSoporte">
+<input name="CategoriaSaludo" value="" id="catsubcat">
+<input name="HTTP_Referer" value="" id="referer">
+<textarea name="Conversacion" id="conversacion" rows="7" cols="50"></textarea>
+
+<input name="CategoriasAsistente" value="" id="categoriasAsistente">
+<input name="ParametrosURL" value="OpenForm; ambito=Informatica">
+<input name="Timeout" value="">
+<input name="ContextoConversacionAlt" value="" id="ContextoAlt">
+<input name="IdentificadorConversacionAlt" value="" id="IdConversacionAlt">
+</p></div>
+
+
+        <!-- Menu de UTILIDADES PREVIEW -->    
+    <div id="arcadia" class="arcadia ui-resizable" style="visibility: hidden; display: none; overflow: hidden; height: 0px;"><div id="contenidoArcadia"><table width="100%"><tbody><tr><td width="40px"></td><td align="center" width="200px"><p><img id="imagenArcadia" src="img/animacionArcadiaNeutra.gif"></p></td><td width="20px"><a href="javascript:cerrarChat();"><img src="img/iconoCerrar.png"></a></td></tr></tbody></table><table><tbody><tr><td id="textoAmbito"></td></tr></tbody></table></div><div id="chat" class="chat" style="padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px"></div><div id="consulta" class="consulta"><div id="divTexto"><table width="100%"><tbody><tr><td><input type="text" id="consultaArcadia" onkeypress="return disableEnterKey(event);" style="width:100%"></td></tr><tr><td style="text-align:right"><input type="button" id="sendConsulta" onclick="enviarConsulta();" value="Enviar">&nbsp;<input type="button" id="nuevaConsulta" onclick="insertarTexto('Nueva consulta');" value="Nueva Consulta"></td></tr></tbody></table></div><table class="notificaciones"><tbody><tr><td class="notificaciones" id="notificaciones"></td></tr></tbody></table></div><div id="divUtilidad"><table><tbody><tr><td></td></tr></tbody></table></div><div class="ui-resizable-handle ui-resizable-e" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-s" style="z-index: 90;"></div><div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 90;"></div></div></div>
+        <div id="pie" style="visibility:hidden;display:none">
+        </div>
+<script type="text/javascript" src="js/arcadia.js"></script>
+<script type="text/javascript">
+var entorno='Informatica';
+
+
+</script>
+<script type="text/javascript">
+
+var ambito="Informatica";
+//var idc="";
+
+if (ambito!="") cargarConfig(ambito);
+//if (idc!='') cargarHistorial(idc);
+
+
+
+</script>
+
+
+
+</div></body></html>
